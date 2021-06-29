@@ -1,11 +1,12 @@
 package com.example.planetmanagement.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -14,29 +15,38 @@ import java.util.List;
 @NoArgsConstructor
 @Getter
 @Setter
-public class PlanetEntity extends BaseEntity{
+@Builder
+public class PlanetEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column
+    @Column(nullable = false)
     private String name;
 
-    @Column(name = "surface_area")
+    @Column(name = "surface_area",nullable = false)
     private Long surfaceArea;
 
-    @Column
+    @Column(nullable = false)
     private Long mass;
 
-    @Column(name = "distance_fromSun")
+    @Column(name = "distance_fromSun",nullable = false)
     private Long distanceFromSun;
 
     @Column(name = "average_surface_temperature")
     private Integer averageSurfaceTemperature;
 
-    @OneToMany(mappedBy="planet")
-    @Column(name = "satellite_entity_list")
-    private List<SatelliteEntity> satelliteEntityEntityList;
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy="planet")
+    @JsonIgnoreProperties("planet")
+    private List<SatelliteEntity> satellites;
+
+    @CreationTimestamp
+    @Column
+    private LocalDateTime created;
+
+    @UpdateTimestamp
+    @Column
+    private LocalDateTime version;
 
 }
